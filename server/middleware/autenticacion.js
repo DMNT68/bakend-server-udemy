@@ -4,10 +4,10 @@ const SEED = require('../config/config').SEED;
 /** 
  * VERFICAR TOKEN 
  **/
-
-exports.verificaToken = function(req, res, next) {
+let verificaToken = (req, res, next) => {
 
     let token = req.query.token;
+
     jwt.verify(token, SEED, (err, decoded) => {
         if (err) {
             return res.status(401).json({
@@ -20,6 +20,7 @@ exports.verificaToken = function(req, res, next) {
         req.usuario = decoded.usuario;
         next();
 
-
     });
-}
+};
+
+module.exports = { verificaToken }

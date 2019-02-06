@@ -1,16 +1,20 @@
 // Requires (importacion de librerias propias o de terceros que utilizamos para que funcione algo)
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+var express = require('express');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 
 // incializar variables
-const app = express();
+var app = express();
 
 // Body Parser
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// Server index config OPCIONAL
+// var serveIndex = require('serve-index');
+// app.use(express.static(__dirname + '/'))
+// app.use('/uploads', serveIndex(__dirname + '/uploads'));
 
 // Ruta Global
 app.use(require('./routes/index'));

@@ -1,16 +1,16 @@
 // Requires (importacion de librerias propias o de terceros que utilizamos para que funcione algo)
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+var express = require('express');
+var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
 
 // incializar variables
-const app = express();
-const Usuario = require('../models/usuario');
-const SEED = require('../config/config').SEED;
+var app = express();
+var Usuario = require('../models/usuario');
+var SEED = require('../config/config').SEED;
 
 app.post('/login', (req, res) => {
 
-    let body = req.body;
+    var body = req.body;
 
     Usuario.findOne({ email: body.email }, (err, usuarioDB) => {
 
@@ -44,7 +44,7 @@ app.post('/login', (req, res) => {
 
         // crear token
         usuarioDB.password = ';)';
-        let token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 }); //4 horas
+        var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 }); //4 horas
 
         res.status(200).json({
             ok: true,

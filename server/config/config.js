@@ -1,1 +1,1 @@
-module.exports.SEED = '@no-usar-seed-mal'
+module.exports.SEED = '@no-usar-seed-mal';

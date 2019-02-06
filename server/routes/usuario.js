@@ -1,21 +1,26 @@
 // Requires (importacion de librerias propias o de terceros que utilizamos para que funcione algo)
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+var express = require('express');
+var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
 
-const mdAutenticacion = require('../middleware/autenticacion');
+const { verificaToken } = require('../middleware/autenticacion');
 
 // incializar variables
-const app = express();
-const Usuario = require('../models/usuario');
+var app = express();
+var Usuario = require('../models/usuario');
 
 
 /**
  * OBTENER TODOS LOS USUARIOS
  **/
-app.get('/usuario', mdAutenticacion.verificaToken, (req, res, next) => {
+app.get('/usuario', (req, res, next) => {
+
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
 
     Usuario.find({}, 'nombre email img role')
+        .skip(desde)
+        .limit(5)
         .exec((err, usuariosDB) => {
 
             if (err) {
@@ -26,10 +31,23 @@ app.get('/usuario', mdAutenticacion.verificaToken, (req, res, next) => {
                 });
             }
 
-            res.status(200).json({
-                ok: true,
-                usuariosDB
+            Usuario.countDocuments((err, conteo) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error al buscar usuarios',
+                        err
+                    });
+                }
+                res.status(200).json({
+                    ok: true,
+                    usuariosDB,
+                    total: conteo
+
+                });
             });
+
+
 
         });
 
@@ -39,11 +57,11 @@ app.get('/usuario', mdAutenticacion.verificaToken, (req, res, next) => {
 /** 
  * CREAR USUARIO 
  **/
-app.post('/usuario', mdAutenticacion.verificaToken, (req, res) => {
+app.post('/usuario', verificaToken, (req, res) => {
 
-    let body = req.body;
+    var body = req.body;
 
-    let usuario = new Usuario({
+    var usuario = new Usuario({
         nombre: body.nombre,
         email: body.email,
         password: bcrypt.hashSync(body.password, 10),
@@ -76,10 +94,10 @@ app.post('/usuario', mdAutenticacion.verificaToken, (req, res) => {
 /**
  * ACTUALIZAR USUARIO 
  **/
-app.put('/usuario/:id', mdAutenticacion.verificaToken, (req, res) => {
+app.put('/usuario/:id', verificaToken, (req, res) => {
 
-    let id = req.params.id;
-    let body = req.body;
+    var id = req.params.id;
+    var body = req.body;
 
     Usuario.findById(id, (err, usuario) => {
 
@@ -129,9 +147,9 @@ app.put('/usuario/:id', mdAutenticacion.verificaToken, (req, res) => {
 /** 
  * BORRAR UN USUARIO 
  **/
-app.delete('/usuario/:id', mdAutenticacion.verificaToken, (req, res) => {
+app.delete('/usuario/:id', verificaToken, (req, res) => {
 
-    let id = req.params.id;
+    var id = req.params.id;
     Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
 
         if (err) {
@@ -158,9 +176,5 @@ app.delete('/usuario/:id', mdAutenticacion.verificaToken, (req, res) => {
     });
 
 });
-
-
-
-
 
 module.exports = app;
