@@ -45,13 +45,45 @@ app.get('/medico', (req, res) => {
 
                 res.status(200).json({
                     ok: true,
-                    medicoBD,
+                    medicos: medicoBD,
                     total: conteo
                 });
             });
 
 
 
+        });
+});
+
+/**
+ * OBTENER MEDICO 
+ **/
+app.get('/medico/:id', (req, res) => {
+    var id = req.params.id;
+    Medico.findById(id)
+        .populate('usuario', 'nombre email img')
+        .populate('hospital')
+        .exec((err, medico) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al buscar médico',
+                    err
+                });
+            }
+
+            if (!medico) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: `El médico con el id: ${idHospital} no existe`,
+                    error: { message: 'No existe un médico con ese id' }
+                });
+            }
+
+            res.status(200).json({
+                ok: true,
+                medico
+            });
         });
 });
 
@@ -100,7 +132,7 @@ app.post('/medico', verificaToken, (req, res) => {
 
             res.status(201).json({
                 ok: true,
-                medicoGuardado
+                medico: medicoGuardado
             });
         });
 
@@ -161,7 +193,7 @@ app.put('/medico/:id', verificaToken, (req, res) => {
 
             res.json({
                 ok: true,
-                medicoBD
+                medico: medicoBD
             });
         });
 
@@ -197,7 +229,7 @@ app.delete('/medico/:id', verificaToken, (req, res) => {
 
         res.json({
             ok: true,
-            medicoBorrado
+            medico: medicoBorrado
         });
 
     });

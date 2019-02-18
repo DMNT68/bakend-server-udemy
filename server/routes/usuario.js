@@ -3,7 +3,7 @@ var express = require('express');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 
-const { verificaToken } = require('../middleware/autenticacion');
+const { verificaToken, verificaAdminRole, verificaAdminRole_o_MismoUsuario } = require('../middleware/autenticacion');
 
 // incializar variables
 var app = express();
@@ -17,10 +17,12 @@ app.get('/usuario', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
+    var limite = req.query.limite || 5;
+    limite = Number(limite);
 
-    Usuario.find({}, 'nombre email img role')
+    Usuario.find({}, 'nombre email img role google')
         .skip(desde)
-        .limit(5)
+        .limit(limite)
         .exec((err, usuariosDB) => {
 
             if (err) {
@@ -57,7 +59,7 @@ app.get('/usuario', (req, res, next) => {
 /** 
  * CREAR USUARIO 
  **/
-app.post('/usuario', verificaToken, (req, res) => {
+app.post('/usuario', (req, res) => {
 
     var body = req.body;
 
@@ -94,7 +96,7 @@ app.post('/usuario', verificaToken, (req, res) => {
 /**
  * ACTUALIZAR USUARIO 
  **/
-app.put('/usuario/:id', verificaToken, (req, res) => {
+app.put('/usuario/:id', [verificaToken, verificaAdminRole_o_MismoUsuario], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
@@ -147,7 +149,7 @@ app.put('/usuario/:id', verificaToken, (req, res) => {
 /** 
  * BORRAR UN USUARIO 
  **/
-app.delete('/usuario/:id', verificaToken, (req, res) => {
+app.delete('/usuario/:id', [verificaToken, verificaAdminRole], (req, res) => {
 
     var id = req.params.id;
     Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {

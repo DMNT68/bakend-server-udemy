@@ -21,6 +21,7 @@ app.put('/upload/:tipo/:id', (req, res) => {
 
     // Validar tipo de colección
     let tiposValidos = ['hospitales', 'usuarios', 'medicos'];
+
     if (tiposValidos.indexOf(tipo) < 0) {
         return res.status(400).json({
             ok: false,
@@ -45,6 +46,7 @@ app.put('/upload/:tipo/:id', (req, res) => {
 
     // extenciones permitidas
     let extensionesValidas = ['png', 'jpg', 'gif', 'jpeg'];
+
     if (extensionesValidas.indexOf(extensionArchivo) < 0) {
         return res.status(400).json({
             ok: false,
